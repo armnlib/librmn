@@ -186,7 +186,7 @@
 #define B32 :32
 #endif
 
-static int endian_int=1;
+static int endian_int = 1;
 static char *little_endian=(char *)&endian_int;
 /***************************************************************************** 
  *                            F R E A D 3 2                                  *
@@ -211,7 +211,7 @@ static size_t fread32(void *ptr, size_t size, size_t nitems, FILE *stream)
 
   if (*little_endian) {
     if ((size & 3) != 0) {
-      fprintf(stderr,"fread64 error: size=%d must be a multiple of 4\n",size);
+      fprintf(stderr,"fread64 error: size = %d must be a multiple of 4\n", size);
       return(-1);
     }
     
@@ -223,7 +223,7 @@ static size_t fread32(void *ptr, size_t size, size_t nitems, FILE *stream)
     }
   }
   else
-    nr = fread(ptr,size,nitems,stream);
+    nr = fread(ptr, size, nitems, stream);
 
   return((size_t) nr);
 }
@@ -317,7 +317,7 @@ static   char *enter_ps = "\033%-12345X@PJL ENTER LANGUAGE=POSTSCRIPT";
 
 static float    Get_Frac();
 
-static int mutant_kmw=FALSE;
+static int mutant_kmw = FALSE;
 
 static int ReadFileType(char *fname);
 static void Flush_Bytes(unsigned int num, FILE *fp );
@@ -335,7 +335,7 @@ static int test_fichier (char *nom );
 
 /*****************************************************/
 
-static int retour(pf,code)
+static int retour(pf, code)
 FILE *pf;
 int code;
 {
@@ -346,17 +346,18 @@ int code;
 /******************************************************/
 
 static int
-isftnbin(pf,lng)
+isftnbin(pf, lng)
 FILE *pf;
 int lng;
 {
    int mot;
    int32_t offset;
 
-   offset = lng +4;
-   fseek(pf,offset,0);
-   fread32(&mot,sizeof(int),1,pf);
-   if (mot == lng) {
+   offset = lng + 4;
+   fseek(pf, offset, 0);
+   fread32(&mot, sizeof(int), 1, pf);
+
+   if (mot == lng && lng != 0) {
       return(1);
    }
    else {
@@ -381,13 +382,13 @@ c_wkoffit(char *nom,int l1)
    ptbuf = &buffer[0];
    if (nom[0] == '+') {     /* garder le nom de fichier tel quel */
      longnom--;
-     strncpy(nom2,nom+1,longnom);
+     strncpy(nom2, nom + 1, longnom);
      nom2[longnom] = '\0';
      while (nom2[--longnom] == ' ')
-       nom2[longnom]='\0';
+       nom2[longnom]= '\0';
    }
    else {
-     strncpy(nom2,nom,longnom);
+     strncpy(nom2, nom, longnom);
      nom2[longnom] = '\0';
      pn2 = &nom2[0];
      pn3 = &nom3[0];
@@ -403,115 +404,115 @@ c_wkoffit(char *nom,int l1)
      }
      *pn2 = '\0';
      *pn3 = '\0';
-     if (lowc == 0) strcpy(nom2,nom3);
+     if (lowc == 0) strcpy(nom2, nom3);
    }
-   pf = fopen(nom2,"rb");
+   pf = fopen(nom2, "rb");
    if (pf == (FILE *) NULL){
       return(WKF_INEXISTANT);
    } else {
 
      /* positionnement a la fin du fichier */
-      fseek(pf,pos,2);       
-      lngf=ftell(pf);
-      if (lngf == 0) return(retour(pf,WKF_VIDE));
+      fseek(pf, pos, 2);
+      lngf = ftell(pf);
+      if (lngf == 0) return(retour(pf, WKF_VIDE));
 
      /* positionnement et lecture au debut du fichier */
-      fseek(pf,pos,0); 
+      fseek(pf, pos, 0);
       fread(cbuf, 1024, 1, pf);           // suite de caracteres
-      fseek(pf,pos,0);     
-      fread32(ptbuf,sizeof(int),1024,pf); // suite d'entiers 32 bits
+      fseek(pf, pos, 0);
+      fread32(ptbuf, sizeof(int), 1024, pf); // suite d'entiers 32 bits
 
      /* CMCARC v5 */
-      if( strncmp(cbuf+17,CMCARC_SIGN_V5,8) == 0 ) {
-        return retour(pf,WKF_CMCARC5);
+      if( strncmp(cbuf + 17, CMCARC_SIGN_V5, 8) == 0 ) {
+        return retour(pf, WKF_CMCARC5);
       }
 
      /* CMCARC v4 */
-      if( strncmp(cbuf+9,CMCARC_SIGN,8) == 0 ) {
-        return retour(pf,WKF_CMCARC4);
+      if( strncmp(cbuf + 9, CMCARC_SIGN, 8) == 0 ) {
+        return retour(pf, WKF_CMCARC4);
       }
 
      /* RANDOM89 */
-      if (*ptbuf == SIGN_STD89_RND && *(ptbuf+1) == SIGN_STD89_RND){
-          return(retour(pf,WKF_RANDOM89));
+      if (*ptbuf == SIGN_STD89_RND && *(ptbuf + 1) == SIGN_STD89_RND){
+          return(retour(pf, WKF_RANDOM89));
       }
 
      /* CCRN */
-      if (*(ptbuf) == 64 && *(ptbuf+17) == 64 && *(ptbuf+2) == 0x20202020){
-         return(retour(pf,WKF_CCRN));
+      if (*(ptbuf) == 64 && *(ptbuf + 17) == 64 && *(ptbuf + 2) == 0x20202020){
+         return(retour(pf, WKF_CCRN));
       }
 
      /* CCRN-RPN */
-      if (*(ptbuf+2) == 0x504b3834 && isftnbin(pf,*ptbuf)){  /* PK84 */
-         return(retour(pf,WKF_CCRN_RPN));
+      if (*(ptbuf + 2) == 0x504b3834 && isftnbin(pf, *ptbuf)){  /* PK84 */
+         return(retour(pf, WKF_CCRN_RPN));
       }
 
      /* SEQUENTIEL89 */
-      if (*(ptbuf+28) == SIGN_STD89_SEQ && *(ptbuf+29) == SIGN_STD89_SEQ){
-         return(retour(pf,WKF_SEQUENTIEL89));
+      if (*(ptbuf + 28) == SIGN_STD89_SEQ && *(ptbuf + 29) == SIGN_STD89_SEQ){
+         return(retour(pf, WKF_SEQUENTIEL89));
       }
 
      /* SEQUENTIELFORTRAN89 */ 
-      if (*(ptbuf+29) == SIGN_STD89_SEQ && *(ptbuf+30) == SIGN_STD89_SEQ
-                       && isftnbin(pf,*ptbuf)) {
-         return(retour(pf,WKF_SEQUENTIELFORTRAN89));
+      if (*(ptbuf + 29) == SIGN_STD89_SEQ && *(ptbuf + 30) == SIGN_STD89_SEQ
+                       && isftnbin(pf, *ptbuf)) {
+         return(retour(pf, WKF_SEQUENTIELFORTRAN89));
       }
  
     /* STANDARD 98 RANDOM */
-      if (*(ptbuf+3) == 'STDR') {
-         if (c_fstcheck(nom2)<0) {
-            return(retour(pf,WKF_CORROMPU));
+      if (*(ptbuf + 3) == 'STDR') {
+         if (c_fstcheck(nom2) < 0) {
+            return(retour(pf, WKF_CORROMPU));
          } else {
-            return(retour(pf,WKF_RANDOM98));
+            return(retour(pf, WKF_RANDOM98));
          }
       }
 
     /* STANDARD 98 SEQUENTIEL */
-      if (*(ptbuf+3) == 'STDS') {
-         return(retour(pf,WKF_SEQUENTIEL98));
+      if (*(ptbuf + 3) == 'STDS') {
+         return(retour(pf, WKF_SEQUENTIEL98));
       }
 
     /* BURP */
-      if ((*(ptbuf+3) == 'BRP0') || (*(ptbuf+3) == 'bRp0')){
-         if (c_burpcheck(nom2)<0) {
-            return(retour(pf,WKF_CORROMPU));
+      if ((*(ptbuf + 3) == 'BRP0') || (*(ptbuf + 3) == 'bRp0')){
+         if (c_burpcheck(nom2) < 0) {
+            return(retour(pf, WKF_CORROMPU));
          } else {
-            return(retour(pf,WKF_BURP));
+            return(retour(pf, WKF_BURP));
          }
       }
 
     /* GRIB */
       if (*(ptbuf) == 0x47524942)   {
-         return(retour(pf,WKF_GRIB));
+         return(retour(pf, WKF_GRIB));
       }
 
     /* BUFR */
       if (*(ptbuf) == 0x42554652)  {
-         return(retour(pf,WKF_BUFR));
+         return(retour(pf, WKF_BUFR));
       }
 
     /* NetCDF classic format */
       if (*(ptbuf) == 'CDF\001'){
-         return(retour(pf,WKF_NETCDF));
+         return(retour(pf, WKF_NETCDF));
       }
 	
     /* NetCDF 64-bit offset format */
       if (*(ptbuf) == 'CDF\002'){
-         return(retour(pf,WKF_NETCDF));
+         return(retour(pf, WKF_NETCDF));
       }
 
     /* BLOK */
       if (*(ptbuf) == 0x424c4f4b)   {
-         return(retour(pf,WKF_BLOK));
+         return(retour(pf, WKF_BLOK));
       }
 
     /* FORTRAN */
-      if (isftnbin(pf,*ptbuf)){
-         return(retour(pf,WKF_FORTRAN));
+      if (isftnbin(pf, *ptbuf)){
+         return(retour(pf, WKF_FORTRAN));
       }
    
     /* INCONNU  */
-      return(retour(pf,test_fichier (nom2) ));
+      return(retour(pf, test_fichier (nom2) ));
    }
 }
 
@@ -597,7 +598,7 @@ char *path;
 /*  first must enter Postcript using PJL */
  
      if ( i == 0 ) {
-       for ( j = 0 ; (j < 256)&&(buffer[j]!='\0') ; j++ )
+       for ( j = 0 ; (j < 256) && (buffer[j] != '\0') ; j++ )
          buffer[j] = (char)toupper((int)buffer[j]);
        if ( strncmp( buffer, enter_ps, strlen(enter_ps) ) == 0 ) {
          fclose( fp );
@@ -757,9 +758,7 @@ char *path;
  */
      while( (*data = getc(fp)) != EOF && cpt++ < 350)
           {
-/*	  printf("Debug cpt=%d \n",cpt); */
           if( *data == sigkmw[kmwndx] ) {
-/*            printf("Debug kmwndx=%d\n",kmwndx); */
             if( kmwndx == strlen(sigkmw) - 1)
               {
               mode = 1;
@@ -964,7 +963,7 @@ static  int isrrbx( path )
 /*
  *  return result
  */
-     return(FALSE);
+    return(FALSE);
 }
 
 /*
@@ -1012,8 +1011,8 @@ char *path;
  */
    fclose(fp);
 
-   magic = (c0<<8)+c1 ;
-   if ((magic == PPM_FORMAT)||(magic == RPPM_FORMAT)) return (TRUE);
+   magic = (c0 << 8) + c1 ;
+   if ((magic == PPM_FORMAT) || (magic == RPPM_FORMAT)) return (TRUE);
 
    return FALSE;
 }
@@ -1073,7 +1072,7 @@ char    buffer[256];
      fclose( fp );
      return(FALSE);
    }
-   for ( j = 0 ; (j < 256)&&(buffer[j]!='\0') ; j++ )
+   for ( j = 0 ; (j < 256) && (buffer[j] != '\0') ; j++ )
      buffer[j] = (char)toupper((int)buffer[j]);
    if ( strncmp( buffer, enter_pcl, 13 ) == 0 ) {
      fclose( fp );
@@ -1397,52 +1396,52 @@ static int ReadFileType(fname)
 
   if (!fp) return rv;
 
-  rv = fread(magicno,8,1,fp);
+  rv = fread(magicno, 8, 1, fp);
   fclose(fp);
 
   if (rv!=1) return WKF_INCONNU;    /* files less than 8 bytes long... */
 
   rv = WKF_INCONNU;
-  if (strncmp((char *) magicno,"GIF87a",6)==0) rv = WKF_GIF87;
+  if (strncmp((char *) magicno, "GIF87a", 6) == 0) rv = WKF_GIF87;
  
-  else if (strncmp((char *) magicno,"GIF89a",6)==0) rv = WKF_GIF89;
+  else if (strncmp((char *) magicno, "GIF89a" , 6) == 0) rv = WKF_GIF89;
 
-  else if (strncmp((char *) magicno,"VIEW",4)==0 ||
-           strncmp((char *) magicno,"WEIV",4)==0) rv = WKF_PM;
+  else if (strncmp((char *) magicno, "VIEW", 4) == 0 ||
+           strncmp((char *) magicno, "WEIV", 4) == 0) rv = WKF_PM;
 
   else if (magicno[0] == 'P' && magicno[1]>='1' &&
-           magicno[1]<='6') rv = WKF_PBM;
+           magicno[1] <= '6') rv = WKF_PBM;
 
-  else if (strncmp((char *) magicno,"#define",7)==0) rv = WKF_XBM;
+  else if (strncmp((char *) magicno, "#define" , 7) == 0) rv = WKF_XBM;
 
-  else if (magicno[0]==0x59 && (magicno[1]&0x7f)==0x26 &&
-           magicno[2]==0x6a && (magicno[3]&0x7f)==0x15) rv = WKF_SUNRAS;
+  else if (magicno[0] == 0x59 && (magicno[1]&0x7f) == 0x26 &&
+           magicno[2] == 0x6a && (magicno[3]&0x7f) == 0x15) rv = WKF_SUNRAS;
 
   else if (magicno[0] == 'B' && magicno[1] == 'M') rv = WKF_BMP;
 
-  else if (magicno[0]==0x52 && magicno[1]==0xcc) rv = WKF_UTAHRLE;
+  else if (magicno[0] == 0x52 && magicno[1] == 0xcc) rv = WKF_UTAHRLE;
 
-  else if ((magicno[0]==0x01 && magicno[1]==0xda) ||
-           (magicno[0]==0xda && magicno[1]==0x01)) rv = WKF_IRIS;
+  else if ((magicno[0] == 0x01 && magicno[1] == 0xda) ||
+           (magicno[0] == 0xda && magicno[1] == 0x01)) rv = WKF_IRIS;
 
-  else if (magicno[0]==0x1f && magicno[1]==0x9d) rv = WKF_COMPRESS;
+  else if (magicno[0] == 0x1f && magicno[1] == 0x9d) rv = WKF_COMPRESS;
 
-  else if (magicno[0]==0x0a && magicno[1] <= 5) rv = WKF_PCX;
+  else if (magicno[0] == 0x0a && magicno[1] <= 5) rv = WKF_PCX;
 
-  else if (magicno[0]==0xff && magicno[1]==0xd8 &&
-           magicno[2]==0xff) rv = WKF_JPG;
+  else if (magicno[0] == 0xff && magicno[1] == 0xd8 &&
+           magicno[2] == 0xff) rv = WKF_JPG;
 
-  else if ((magicno[0]=='M' && magicno[1]=='M') ||
-           (magicno[0]=='I' && magicno[1]=='I')) rv = WKF_TIFF;
+  else if ((magicno[0] == 'M' && magicno[1] == 'M') ||
+           (magicno[0] == 'I' && magicno[1] == 'I')) rv = WKF_TIFF;
 
-  else if (strncmp((char *) magicno,  "NJPL1I00",8)==0 || /* fixed-len pds */
-           strncmp((char *) magicno+2,"NJPL1I",  6)==0 || /* vger+other pds *
+  else if (strncmp((char *) magicno, "NJPL1I00",8) == 0 || /* fixed-len pds */
+           strncmp((char *) magicno + 2,"NJPL1I",  6) == 0 || /* vger+other pds *
 /
-           strncmp((char *) magicno,  "CCSD3ZF", 7)==0 || /* vikng pds browse
+           strncmp((char *) magicno, "CCSD3ZF", 7)==0 || /* vikng pds browse
 */
-           strncmp((char *) magicno+2,"CCSD3Z",  6)==0 || /* vik. huffman pds
+           strncmp((char *) magicno + 2, "CCSD3Z",  6) == 0 || /* vik. huffman pds
 */
-           strncmp((char *) magicno,  "LBLSIZE=",8)==0)   /* vicar */
+           strncmp((char *) magicno, "LBLSIZE=", 8) == 0)   /* vicar */
       rv = WKF_PDSVICAR;
 
   else if (magicno[0] == '%' && magicno[1] == '!') rv = WKF_PS;
@@ -1460,7 +1459,7 @@ int main(int argc, char **argv){
   }
   code = c_wkoffit(argv[1], strlen(argv[1]));
 //   printf("type code = %d\n",code);
-  for(i=2 ; i<argc ; i++){
+  for(i = 2 ; i < argc ; i++){
     if(atoi(argv[i]) == code) return 0;
   }
   return 1;
@@ -1472,9 +1471,9 @@ int main(int argc, char **argv){
 #include <rpnmacros.h>
 wordint f77name(wkoffit)(char *nom, F2Cl fl1)
 {
-  int l1=fl1;
+  int l1 = fl1;
   
-  return(c_wkoffit(nom,l1));
+  return(c_wkoffit(nom, l1));
 }
 
 #endif
