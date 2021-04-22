@@ -24,8 +24,8 @@ enable_language(Fortran)
 
 include(ec_compiler_presets)
 set(WITH_OPENMP TRUE)
-#include("${CMAKE_SOURCE_DIR}/cmake_rpn/OpenMP.cmake")
-#include("${CMAKE_SOURCE_DIR}/cmake_rpn/doxygen.cmake")
+include(OpenMP)
+include(ec_doxygen)
 
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
