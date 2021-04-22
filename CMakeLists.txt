@@ -25,7 +25,7 @@ enable_language(Fortran)
 include(ec_compiler_presets)
 set(WITH_OPENMP TRUE)
 include(OpenMP)
-include(ec_doxygen)
+#include(ec_doxygen)
 
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
