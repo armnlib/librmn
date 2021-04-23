@@ -50,7 +50,8 @@ file(GLOB PROJECT_F_FILES
 )
 file(GLOB PROJECT_INCLUDE_FILES src/PUBLIC_INCLUDES/*)
 
-add_library(rmn ${PROJECT_C_FILES} ${PROJECT_F_FILES})
+add_library(rmnshared SHARED ${PROJECT_C_FILES} ${PROJECT_F_FILES})
+add_library(rmn STATIC ${PROJECT_C_FILES} ${PROJECT_F_FILES})
 add_executable(librmn_version src/librmn_version.c)
 add_dependencies(librmn_version rmn)
 target_link_libraries(librmn_version rmn)
@@ -62,33 +63,36 @@ target_link_libraries(librmn_version rmn)
 # We need to creat a file here because gfortran won't process a file nammmed *.hf
 file(GLOB GMM_HEADER_DEPS ${CMAKE_SOURCE_DIR}/src/gmm/*.inc ${CMAKE_SOURCE_DIR}/src/gmm/*.hf)
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmm_header.F90 "#include <gmm.hf>\n")
-add_custom_command(
-    TARGET rmn
-    POST_BUILD
-    COMMAND ${CMAKE_Fortran_COMPILER} -I${CMAKE_SOURCE_DIR}/src/gmm -P -E ${CMAKE_CURRENT_BINARY_DIR}/gmm_header.F90 > ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf
-    COMMENT "Generating gmm.hf"
-    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/src/gmm/gmm.hf
-    DEPENDS ${GMM_HEADER_DEPS}
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf
-    USES_TERMINAL
-)
 
-file(GLOB WHITEBOARD_HEADER_DEPS ${CMAKE_SOURCE_DIR}/src/whiteboard/*.tmpl90 ${CMAKE_SOURCE_DIR}/src/whiteboard/*.hf)
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/whiteboard_header.F90 "#include <WhiteBoard.hf>\n")
-add_custom_command(
-    TARGET rmn
-    POST_BUILD
-    COMMAND ${CMAKE_Fortran_COMPILER} -I${CMAKE_SOURCE_DIR}/include -I${CMAKE_SOURCE_DIR}/src/whiteboard -P -E ${CMAKE_CURRENT_BINARY_DIR}/whiteboard_header.F90 > ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf
-    COMMENT "Generating WhiteBoard.hf"
-    MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/src/whiteboard/WhiteBoard.hf
-    DEPENDS ${WHITEBOARD_HEADER_DEPS}
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf
-    USES_TERMINAL
-)
+foreach(target IN ITEMS rmn rmnshared)
+  add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      COMMAND ${CMAKE_Fortran_COMPILER} -I${CMAKE_SOURCE_DIR}/src/gmm -P -E ${CMAKE_CURRENT_BINARY_DIR}/gmm_header.F90 > ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf
+      COMMENT "Generating gmm.hf"
+      MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/src/gmm/gmm.hf
+      DEPENDS ${GMM_HEADER_DEPS}
+      BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf
+      USES_TERMINAL
+   )
 
-list(APPEND PROJECT_INCLUDE_FILES ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf)
+   file(GLOB WHITEBOARD_HEADER_DEPS ${CMAKE_SOURCE_DIR}/src/whiteboard/*.tmpl90 ${CMAKE_SOURCE_DIR}/src/whiteboard/*.hf)
+   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/whiteboard_header.F90 "#include <WhiteBoard.hf>\n")
+   add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      COMMAND ${CMAKE_Fortran_COMPILER} -I${CMAKE_SOURCE_DIR}/include -I${CMAKE_SOURCE_DIR}/src/whiteboard -P -E ${CMAKE_CURRENT_BINARY_DIR}/whiteboard_header.F90 > ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf
+      COMMENT "Generating WhiteBoard.hf"
+      MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/src/whiteboard/WhiteBoard.hf
+      DEPENDS ${WHITEBOARD_HEADER_DEPS}
+      BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf
+      USES_TERMINAL
+   )
 
-set_target_properties(rmn PROPERTIES VERSION ${GIT_VERSION})
-set_target_properties(rmn PROPERTIES PUBLIC_HEADER "${PROJECT_INCLUDE_FILES}")
+   list(APPEND PROJECT_INCLUDE_FILES ${CMAKE_CURRENT_BINARY_DIR}/gmm.hf ${CMAKE_CURRENT_BINARY_DIR}/WhiteBoard.hf)
 
-install(TARGETS rmn librmn_version)
+   set_target_properties(${target} PROPERTIES VERSION ${GIT_VERSION})
+   set_target_properties(${target} PROPERTIES PUBLIC_HEADER "${PROJECT_INCLUDE_FILES}")
+endforeach()
+
+install(TARGETS rmn rmnshared librmn_version)
