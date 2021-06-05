@@ -23,15 +23,17 @@ set(WITH_OPENMP TRUE CACHE BOOL "Control whether to use OpenMP")
 include(OpenMP)
 include(ec_doxygen)
 
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
+# set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
+# set(CMAKE_Fortran_COMPILER gfortran)
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fallow-argument-mismatch")
 # Figure out the correct ach_dependant include path
 set(BUILD_ARCH "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "Build architecture: ${BUILD_ARCH}")
 
 include_directories(
    include
-   include/${BUILD_ARCH}-${COMPILER_SUITE}
+   include/Linux-x86_64-gnu
    src/PUBLIC_INCLUDES
 )
 
