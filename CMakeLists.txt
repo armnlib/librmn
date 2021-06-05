@@ -53,7 +53,6 @@ ec_build_info()
 add_library(rmn ${PROJECT_C_FILES} ${PROJECT_F_FILES})
 add_dependencies(rmn build_info)
 add_executable(librmn_version src/librmn_version.c)
-add_dependencies(librmn_version rmn)
 target_link_libraries(librmn_version rmn)
 
 
