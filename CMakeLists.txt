@@ -17,7 +17,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries instead of static ones." FALSE)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type (Debug, Release, RelWithDebInfo, MinSizeRel)")
 
 enable_language(C Fortran)
-include(ec_compiler_presets)
+include(ec_compiler_presets/ECCC/ubuntu-18.04-amd-64/gnu)
 
 set(WITH_OPENMP TRUE CACHE BOOL "Control whether to use OpenMP")
 include(OpenMP)
