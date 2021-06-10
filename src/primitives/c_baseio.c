@@ -501,22 +501,7 @@ int c_fnom(int *iun, char *nom, char *type, int lrec)
             c2 = FGFDT[i].file_name;
             *(c2 + lng) = '\0';
         } else {
-            c2 = FGFDT[i].file_name;
-            *(c2 + lng) = '\0';
-            for (j = 0; j < lng; j++, c++, c2++) {
-                if (islower(*c)) {
-                    minus = 1;
-                    *c2 = *c;
-                } else if (isupper(*c)) {
-                    majus = 1;
-                    *c2 = tolower(*c);
-                } else {
-                    *c2 = *c;
-                }
-            }
-            if (majus && minus) {
-                strncpy(FGFDT[i].file_name,nom,lng);
-            }
+            strncpy(FGFDT[i].file_name,nom,lng);
         }
     }
 /*
